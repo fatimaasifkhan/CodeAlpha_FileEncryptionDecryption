@@ -1,0 +1,82 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+
+char encryptChar(char ch, int shift) {
+    if (isalpha(ch)) {
+        char base = islower(ch) ? 'a' : 'A';
+        return static_cast<char>((ch - base + shift) % 26 + base);
+    }
+    return ch;
+}
+
+char decryptChar(char ch, int shift) {
+    return encryptChar(ch, -shift);
+}
+
+
+void encryptFile(const string& inputFile, const string& outputFile, int shift) {
+    ifstream fin(inputFile);
+    if (!fin) {
+       cerr << "Error opening input file.\n";
+        return;
+    }
+
+   ofstream fout(outputFile);
+    if (!fout) {
+        cerr << "Error opening output file.\n";
+        fin.close();
+        return;
+    }
+
+    char ch;
+    while (fin.get(ch)) {
+        fout << encryptChar(ch, shift);
+    }
+
+    fin.close();
+    fout.close();
+}
+
+void decryptFile(const string& inputFile, const string& outputFile, int shift) {
+    encryptFile(inputFile, outputFile, -shift);
+}
+
+
+int main() {
+    string inputFile, outputFile;
+    int shift;
+    char choice;
+
+    cout << "Enter input file name: ";
+    getline(cin, inputFile);
+
+    cout << "Enter output file name: ";
+    getline(cin, outputFile);
+
+    cout << "Enter shift value (positive integer): ";
+    cin >> shift;
+
+    cout << "Encrypt (e) or Decrypt (d)? ";
+    cin >> choice;
+
+    switch (choice) {
+    case 'e':
+    case 'E':
+        encryptFile(inputFile, outputFile, shift);
+        cout << "File encrypted successfully.\n";
+        break;
+    case 'd':
+    case 'D':
+        decryptFile(inputFile, outputFile, shift);
+        cout << "File decrypted successfully.\n";
+        break;
+    default:
+        cerr << "Invalid choice. Please choose 'e' or 'd'.\n";
+        return 1;
+    }
+
+    return 0;
+}
